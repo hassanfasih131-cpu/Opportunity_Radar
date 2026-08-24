@@ -30,3 +30,6 @@ def collect_data():
         return []
 #Test
 #print(collect_data())
+
+def filter_data():
+    pass
