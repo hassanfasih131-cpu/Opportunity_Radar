@@ -61,3 +61,5 @@ def filter_data(jobs):
     store.sort(key=lambda job: job["relevance_score"], reverse=True)
     print(f"{len(store)} jobs matched our criteria.")
     return store
+def generate_dashboard():
+    pass
