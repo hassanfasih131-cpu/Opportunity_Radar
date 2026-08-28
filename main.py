@@ -1,5 +1,4 @@
-from encodings import utf_8
-
+from job_memory import (save_memory, find_new_jobs, load_memory)
 import requests
 import datetime
 from datetime import datetime
@@ -165,7 +164,13 @@ def generate_dashboard(options):
         print("Dashboard generated")
 def main():
     options=collect_data()
+    if not options:
+        print("No options provided")
+        return
     filter=filter_data(options)
+    previous_ID=load_memory()
+    new_jobs,current_ID = find_new_jobs(filter,previous_ID)
+    save_memory(current_ID)
     DASHBOARD=generate_dashboard(filter)
     print("Scan Completed")
 
