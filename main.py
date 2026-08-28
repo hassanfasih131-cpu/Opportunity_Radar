@@ -8,7 +8,7 @@ url = "https://remotive.com/api/remote-jobs"
 def collect_data():
     #Collecting job opportunities from the public API.
     try:
-        response = requests.get(url,params={"search":"marketing","limit":50}, timeout=10)
+        response = requests.get(url,params={"search":"marketing,sales","limit":50}, timeout=10)
         #Raises an exception
         response.raise_for_status()
         #Convert the JSON response into a Python dictionary.
@@ -36,31 +36,35 @@ def collect_data():
 
 def filter_data(jobs):
     #filter and rank marketing opportunities
-    keywords=["marketing","advertising","digital marketing", "social media", "seo", "content marketing"] #keywords
-    count=0 #score points
+    keywords=["marketing", "advertising", "digital marketing", "social media", "seo", "content marketing", "sales"]
+    excluded=["software", "developer", "engineer", "technical writer", "data scientist", "devops", "frontend","backend"
+              ,"writer", "reviewer", "editor"]
     store=[]
     for i in jobs:
-        title=i.get("title")
-        description=i.get("description")
-        job=(title+": "+description).lower() #combining the title and description
-        for j in keywords:
-            if j in job:
-                count+=10
-        #location information
-        location = i.get("candidate_required_location","").lower()
-        if "worldwide" in location.lower():
-            count += 10
-        job_type=i.get("job_type","").lower()
-        #helping find entry level positions
-        if job_type=="internship":
-            count += 10
-        #ignoring non entry level positions
-        if "senior" "executive" "lead" "mid-level" in title.lower():
+        count = 0  # score points
+        title=i.get("title","").lower()
+        description=i.get("description","").lower()
+        job=f"{title}: {description}" #combining the title and description
+        senior_terms = ["senior", "executive", "lead", "director", "manager", "head"
+            , "sr.","vice president", "v.p.", "chief","principal"]
+        if any(term in title for term in senior_terms):
             continue
-        if count>0:
-            #stores the calculated score
-            i["relevance_score"]=count
+        matches = [kw for kw in keywords if kw in job]
+        if not matches:
+            continue
+        count += len(matches) * 10
+        if any(ex in title for ex in excluded):
+            continue
+        location = i.get("candidate_required_location", "").lower()
+        if "worldwide" in location:
+            count += 10
+        job_type = i.get("job_type", "").lower()
+        if job_type == "internship" or "intern" in title or "junior" in title or "entry" in title:
+            count += 10
+        if count > 0:
+            i["relevance_score"] = count
             store.append(i)
+    # Rank by score highest to lowest
     store.sort(key=lambda job: job["relevance_score"], reverse=True)
     print(f"{len(store)} jobs matched our criteria.")
     return store
@@ -73,7 +77,7 @@ def generate_dashboard(options):
     <head>
         <meta charset="utf-8">
         <title>
-            Digital Marketing Opportunities Radar
+            Digital Marketing or Sales Opportunities Radar
         </title>
     </head>
     <body>
@@ -159,3 +163,10 @@ def generate_dashboard(options):
         with open("GeneratedOutput.html","w",encoding="utf_8") as f:
             f.write(html)
         print("Dashboard generated")
+def main():
+    options=collect_data()
+    filter=filter_data(options)
+    DASHBOARD=generate_dashboard(filter)
+    print("Scan Completed")
+
+main()
