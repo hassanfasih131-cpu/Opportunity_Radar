@@ -76,12 +76,12 @@ def generate_dashboard(options):
     <head>
         <meta charset="utf-8">
         <title>
-            Digital Marketing or Sales Opportunities Radar
+            Digital Marketing/Sales Opportunities Radar
         </title>
     </head>
     <body>
     <h1>
-            Digital Marketing Opportunities Radar
+            Digital Marketing/Sales Opportunities Radar
     </h1>
     <p>
         <strong>Generated on {creation_time}</strong>
@@ -148,7 +148,7 @@ def generate_dashboard(options):
                 </p>
 
                 <a
-                    href="{url}"
+                    href="{URL}"
                     target="_blank"
                 >
                     View Job on Remotive
@@ -159,9 +159,9 @@ def generate_dashboard(options):
             <hr>
         """
         #Saving the HTML file
-        with open("GeneratedOutput.html","w",encoding="utf_8") as f:
-            f.write(html)
-        print("Dashboard generated")
+    with open("GeneratedOutput.html","w",encoding="utf_8") as f:
+        f.write(html)
+    print("Dashboard generated")
 def main():
     options=collect_data()
     if not options:

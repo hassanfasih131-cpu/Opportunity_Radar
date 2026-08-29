@@ -15,7 +15,7 @@ def load_memory():
         previous_ids = memory.get("seen_job_ids",[])
         return set(previous_ids)
     except json.JSONDecodeError:
-        print("ERROR: Invalid Json file")
+        print("ERROR: Invalid Json file or file was previously empty")
         return set()
     except OSError:
         print(f"ERROR: Could not read the memory file") #error of file not being opening
